@@ -1,5 +1,8 @@
 #include "scientistrepository.h"
 #include <QtSql>
+#include <QSqlQuery>
+#include <QSqlDatabase>
+
 
 
 ScientistRepository::ScientistRepository(std::string fname) {
@@ -38,16 +41,29 @@ ScientistRepository::~ScientistRepository() {
 void ScientistRepository::add(Scientist scientist) {
     // Replace our chosen delimiter with space to avoid breaking the delimited format of the file
     std::replace(scientist.name.begin(),scientist.name.end(),delimiter,' ');
-//    scientistList.push_back(scientist);
-//    save();
+    scientistList.push_back(scientist);
+    save();
 
     QSqlDatabase db;
     db = QSqlDatabase::addDatabase("QSQLITE");
     QString dbName = "Skil2.sqlite";
     db.setDatabaseName(dbName);
+    db.open();
 
     QSqlQuery query;
-    query.exec("insert into Scientists('Name','DateOfBirth','DateOfDeath','Gender') VALUES ('Hallo','4abd','5ddd','kk')");
+    query.exec("SELECT * FROM Scientists");
+
+    while(query.next()){
+        Scientist a = Scientist();
+
+        a.name = query.value("name").toString().toStdString();
+        a.dateOfBirth = query.value("dateOfBirth").toString().toStdString();
+        a.dateOfDeath = query.value("dateofDeath").toString().toStdString();
+        a.gender = query.value("gender").toString().toStdString();
+
+        query.exec("INSERT INTO Scientists('Name','DateOfBirth','DateOfDeath','Gender') VALUES ('HEHE','HAHA','HIHI','KIKI')");
+        scientistList.push_back(a);
+    }
 }
 
 
@@ -72,19 +88,41 @@ std::list<Scientist> ScientistRepository::deepCopy() {
     return outList;
 }
 
+
+
 void ScientistRepository::save() {
     std::ofstream scientistFile;
-    scientistFile.open(filename.c_str());
+//    scientistFile.open(filename.c_str());
 
-    if(!scientistFile.is_open()) {
-        throw std::runtime_error("Failed to open " + filename);
-    }
+//    if(!scientistFile.is_open()) {
+//        throw std::runtime_error("Failed to open " + filename);
+//    }
 
-    for(std::list<Scientist>::iterator iter = scientistList.begin(); iter != scientistList.end(); iter++) {
-        scientistFile << (*iter).name << delimiter << (*iter).dateOfBirth << delimiter << (*iter).dateOfDeath << delimiter << (*iter).gender << std::endl;
-    }
-    scientistFile.flush();
-    scientistFile.close();
+//    for(std::list<Scientist>::iterator iter = scientistList.begin(); iter != scientistList.end(); iter++) {
+//        scientistFile << (*iter).name << delimiter << (*iter).dateOfBirth << delimiter << (*iter).dateOfDeath << delimiter << (*iter).gender << std::endl;
+//    }
+//    scientistFile.flush();
+//    scientistFile.close();
+
+    QSqlDatabase db = QSqlDatabase();
+    db = QSqlDatabase::addDatabase("QSQLITE");
+    //QString dbName = "C:/Users/Herdís/Desktop/Skil2/VLN1-master/build-Solution1-Desktop_Qt_5_3_MinGW_32bit-Debug/Skil2.sqlite";
+    db.setDatabaseName("Skil2.sqlite");
+    db.open();
+
+    QSqlQuery query;
+    query.exec("SELECT * FROM Scientists");
+
+    while(query.next()){
+        Scientist a = Scientist();
+
+        a.name = query.value("name").toString().toStdString();
+        a.dateOfBirth = query.value("dateOfBirth").toString().toStdString();
+        a.dateOfDeath = query.value("dateofDeath").toString().toStdString();
+        a.gender = query.value("gender").toString().toStdString();
+
+        scientistList.push_back(a);
+}
 }
 
 Scientist* ScientistRepository::search(std::string searchTerm) {
