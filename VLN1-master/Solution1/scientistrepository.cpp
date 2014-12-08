@@ -1,4 +1,5 @@
 #include "scientistrepository.h"
+#include <QtSql>
 
 
 ScientistRepository::ScientistRepository(std::string fname) {
@@ -37,8 +38,16 @@ ScientistRepository::~ScientistRepository() {
 void ScientistRepository::add(Scientist scientist) {
     // Replace our chosen delimiter with space to avoid breaking the delimited format of the file
     std::replace(scientist.name.begin(),scientist.name.end(),delimiter,' ');
-    scientistList.push_back(scientist);
-    save();
+//    scientistList.push_back(scientist);
+//    save();
+
+    QSqlDatabase db;
+    db = QSqlDatabase::addDatabase("QSQLITE");
+    QString dbName = "Skil2.sqlite";
+    db.setDatabaseName(dbName);
+
+    QSqlQuery query;
+    query.exec("insert into Scientists('Name','DateOfBirth','DateOfDeath','Gender') VALUES ('Hallo','4abd','5ddd','kk')");
 }
 
 
@@ -48,6 +57,7 @@ std::list<Scientist> ScientistRepository::list() {
 
 std::list<Scientist> ScientistRepository::list(std::string col, std::string mod) {
     std::list<Scientist> outList = std::list<Scientist>();
+
     outList = deepCopy();
     Comparer comp = Comparer(col,mod);
     outList.sort(comp);
