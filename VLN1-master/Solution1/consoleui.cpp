@@ -89,11 +89,16 @@ int ConsoleUI::respondToMessage() {
             std::cin.ignore();
             std::getline(std::cin,searchTerm);
             clear();
-            Scientist* searchResult = scienceService.search(searchTerm);
-            if(searchResult) {
+            std::list<Scientist> searchResult = scienceService.search(searchTerm);
+            if(!searchResult.empty()) {
                 std::cout << "Scientist found!!" << std::endl;
                 std::cout << "Name:\t\tDateOfBirth:\tDateOfDeath:\tGender:\n";
-                std::cout << searchResult->name << "\t" << searchResult->dateOfBirth << "\t\t" << searchResult->dateOfDeath << "\t\t" << searchResult->gender << std::endl;
+                for(list<Scientist>::iterator iter = searchResult.begin(); iter != searchResult.end(); iter++)
+                {
+                    cout << iter->name << " " << iter->dateOfBirth << " " << iter->dateOfDeath << " " << iter->gender;
+                    cout << endl;
+                }
+                //std::cout << searchResult->name << "\t" << searchResult->dateOfBirth << "\t\t" << searchResult->dateOfDeath << "\t\t" << searchResult->gender << std::endl;
             } else {
                 std::cout << "No results found for the term: " << searchTerm << std::endl;
             }

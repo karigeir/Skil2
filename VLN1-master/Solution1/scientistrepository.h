@@ -22,7 +22,7 @@ public:
     void add(Scientist);
     // Returns the first scientist that matches the search term
     // declared as a pointer so that we can return a null reference
-    Scientist* search(std::string searchTerm);
+    std::list<Scientist> search(std::string searchTerm);
     std::list<Scientist> list();
     // Returns a list ordered by column and modifier
     std::list<Scientist> list(int col, int mod);

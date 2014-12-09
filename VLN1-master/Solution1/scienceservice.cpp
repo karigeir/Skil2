@@ -19,6 +19,6 @@ std::list<Scientist> ScienceService::getScientistsOrderedBy(char col, char mod) 
     return scientistRepository.list(col,mod);
 }
 
-Scientist* ScienceService::search(std::string searchTerm) {
+std::list<Scientist> ScienceService::search(std::string searchTerm) {
     return scientistRepository.search(searchTerm);
 }

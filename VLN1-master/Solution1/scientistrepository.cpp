@@ -93,7 +93,6 @@ void ScientistRepository::add(Scientist scientist) {
 }
 
 
-
 std::list<Scientist> ScientistRepository::list() {
 
     std::list<Scientist> scientists = std::list<Scientist>();
@@ -113,8 +112,6 @@ std::list<Scientist> ScientistRepository::list() {
     }
 
     return scientists;
-    //return deepCopy();
-    //}
 }
 
 std::list<Scientist> ScientistRepository::list(int col, int mod)
@@ -236,12 +233,37 @@ void ScientistRepository::save() {
 
 
 
-Scientist* ScientistRepository::search(std::string searchTerm) {
-    // Naive search implementation, finds the case sensitive substring in the name and returns first match
-    for(std::list<Scientist>::iterator iter = scientistList.begin(); iter != scientistList.end(); iter++) {
-        if(iter->name.find(searchTerm) != std::string::npos) {
-            return new Scientist(*iter);
-        }
+std::list<Scientist> ScientistRepository::search(std::string searchTerm)
+{
+    QSqlDatabase db = databaseConnect();
+    QSqlQuery query(db);
+
+    query.exec(QString::fromStdString("Select * from Scientists where Name like '%" + searchTerm + "%'"));
+
+
+    std::list<Scientist> scientists = std::list<Scientist>();
+
+    while(query.next())
+    {
+        Scientist a = Scientist();
+        a.name = query.value("Name").toString().toStdString();
+        a.dateOfBirth = query.value("DateOfBirth").toString().toStdString();
+        a.dateOfDeath = query.value("DateofDeath").toString().toStdString();
+        a.gender = query.value("Gender").toString().toStdString();
+        scientists.push_back(a);
     }
-    return NULL;
+
+    return scientists;
+
+
+
+
+
+//    // Naive search implementation, finds the case sensitive substring in the name and returns first match
+//    for(std::list<Scientist>::iterator iter = scientistList.begin(); iter != scientistList.end(); iter++) {
+//        if(iter->name.find(searchTerm) != std::string::npos) {
+//            return new Scientist(*iter);
+//        }
+//    }
+//    return NULL;
 }

@@ -10,13 +10,12 @@ std::string MAIN_MENU = "Please use the following commands to interface with thi
         search        : Searches for a scientist\n\
         exit          : Exit the program";
 
-std::string FILTER_MENU = "Enter one of the following commands to order by the corresponding column\n\
-along with an ascending(asc) or descending(desc) modifier\n\
-        name    : Name\n\
-        dob     : Date of birth\n\
-        dod     : Date of death\n\
-        gender  : Gender\n\n\
-Example: \"name desc\"";
+std::string FILTER_MENU = "Enter one of the following integers to order by the corresponding column.\n\
+        1     : Name\n\
+        2     : Date of birth\n\
+        3     : Date of death\n\
+        4     : Gender\n\ Press 1 if you want to sort ascending and 2 if you want to sort descending\n\n\
+    Example: \"1 1\"";
 
 
 #endif // MENUS_H
