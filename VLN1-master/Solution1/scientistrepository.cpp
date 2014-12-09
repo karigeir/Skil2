@@ -2,6 +2,7 @@
 #include <QtSql>
 #include <QSqlQuery>
 #include <QSqlDatabase>
+#include <QVariant>
 
 
 
@@ -38,37 +39,84 @@ ScientistRepository::ScientistRepository(std::string fname) {
 ScientistRepository::~ScientistRepository() {
 }
 
+QSqlDatabase ScientistRepository::databaseConnect()
+{
+    QString connectionName = "ScientistConnection";
+
+    QSqlDatabase db;
+
+    if (QSqlDatabase::contains(connectionName))
+    {
+        db = QSqlDatabase::addDatabase("QSQLITE");
+    }
+    else
+    {
+        db = QSqlDatabase::addDatabase("QSQLITE", connectionName);
+        db.setDatabaseName("Skil2.sqlite");
+    }
+
+    QSqlQuery query(db);
+    db.open();
+    query.prepare("PRAGMA foreign_keys ON");
+    query.exec();
+    query.clear();
+
+    return db;
+}
+
 void ScientistRepository::add(Scientist scientist) {
     // Replace our chosen delimiter with space to avoid breaking the delimited format of the file
     std::replace(scientist.name.begin(),scientist.name.end(),delimiter,' ');
     scientistList.push_back(scientist);
     save();
 
-    QSqlDatabase db;
+    QSqlDatabase db = databaseConnect();
+    QSqlQuery query(db);
+
+    QVariant qstrName = QVariant(QString::fromStdString(scientist.name));
+    QVariant qstrBirth = QVariant(QString::fromStdString(scientist.dateOfBirth));
+    QVariant qstrDeath = QVariant(QString::fromStdString(scientist.dateOfDeath));
+    QVariant qstrGender = QVariant(QString::fromStdString(scientist.gender));
+
+
+    query.prepare("INSERT INTO Scientists ('Name', 'DateOfBirth', 'DateOfDeath', 'Gender')"
+                              "VALUES(:Name, :DateOfBirth, :DateOfDeath, :Gender)");
+
+        query.bindValue(":Name",qstrName);
+        query.bindValue(":DateOfBirth",qstrBirth);
+        query.bindValue(":DateOfDeath",qstrDeath);
+        query.bindValue(":Gender",qstrGender);
+
+        query.exec();
+}
+
+
+
+std::list<Scientist> ScientistRepository::list() {
+
+    std::list<Scientist> scientists = std::list<Scientist>();
+
+    QSqlDatabase db = QSqlDatabase();
     db = QSqlDatabase::addDatabase("QSQLITE");
     QString dbName = "Skil2.sqlite";
     db.setDatabaseName(dbName);
-    db.open();
+    db.open(); //Tekka hvort tad se tenging eda ekki. Setja database i h skrana.
 
-    QSqlQuery query;
+    QSqlQuery query(db);
     query.exec("SELECT * FROM Scientists");
 
     while(query.next()){
         Scientist a = Scientist();
-
-        a.name = query.value("name").toString().toStdString();
-        a.dateOfBirth = query.value("dateOfBirth").toString().toStdString();
-        a.dateOfDeath = query.value("dateofDeath").toString().toStdString();
-        a.gender = query.value("gender").toString().toStdString();
-
-        query.exec("INSERT INTO Scientists('Name','DateOfBirth','DateOfDeath','Gender') VALUES ('HEHE','HAHA','HIHI','KIKI')");
-        scientistList.push_back(a);
+        a.name = query.value("Name").toString().toStdString();
+        a.dateOfBirth = query.value("DateOfBirth").toString().toStdString();
+        a.dateOfDeath = query.value("DateofDeath").toString().toStdString();
+        a.gender = query.value("Gender").toString().toStdString();
+        scientists.push_back(a);
     }
-}
 
-
-std::list<Scientist> ScientistRepository::list() {
-    return deepCopy();
+    return scientists;
+    //return deepCopy();
+    //}
 }
 
 std::list<Scientist> ScientistRepository::list(std::string col, std::string mod) {
@@ -104,26 +152,28 @@ void ScientistRepository::save() {
 //    scientistFile.flush();
 //    scientistFile.close();
 
-    QSqlDatabase db = QSqlDatabase();
-    db = QSqlDatabase::addDatabase("QSQLITE");
-    //QString dbName = "C:/Users/Herdís/Desktop/Skil2/VLN1-master/build-Solution1-Desktop_Qt_5_3_MinGW_32bit-Debug/Skil2.sqlite";
-    db.setDatabaseName("Skil2.sqlite");
-    db.open();
+//    QSqlDatabase db;
+//    db = QSqlDatabase::addDatabase("QSQLITE");
+//    QString dbName = "Skil2.sqlite";
+//    db.setDatabaseName(dbName);
+//    db.open();
 
-    QSqlQuery query;
-    query.exec("SELECT * FROM Scientists");
+//    QSqlQuery query(db);
+//    query.exec("SELECT * FROM Scientists");
 
-    while(query.next()){
-        Scientist a = Scientist();
+//    while(query.next()){
+//        //Scientist a = Scientist();
 
-        a.name = query.value("name").toString().toStdString();
-        a.dateOfBirth = query.value("dateOfBirth").toString().toStdString();
-        a.dateOfDeath = query.value("dateofDeath").toString().toStdString();
-        a.gender = query.value("gender").toString().toStdString();
+//        scientist.name = query.value("name").toString().toStdString();
+//        scientist.dateOfBirth = query.value("dateOfBirth").toString().toStdString();
+//        scientist.dateOfDeath = query.value("dateofDeath").toString().toStdString();
+//        scientist.gender = query.value("gender").toString().toStdString();
 
-        scientistList.push_back(a);
-}
-}
+//        query.exec("INSERT INTO Scientists('Name','DateOfBirth','DateOfDeath','Gender') VALUES ('HUHU','HUHU','dateOfDeath','scientist.gender')");
+//        scientistList.push_back(scientist);
+    }
+
+
 
 Scientist* ScientistRepository::search(std::string searchTerm) {
     // Naive search implementation, finds the case sensitive substring in the name and returns first match

@@ -5,6 +5,8 @@
 #include <stack>
 #include <list>
 #include "scienceservice.h"
+#include <QString>
+
 
 // Display layer for the console application
 class ConsoleUI {

@@ -10,6 +10,7 @@
 #include <vector>
 #include "comparer.h"
 #include <algorithm>
+#include <QSqlDatabase>
 
 // Handles all the things that pertain to persistence
 // uses a file that is located in the build root directory
@@ -25,6 +26,7 @@ public:
     std::list<Scientist> list();
     // Returns a list ordered by column and modifier
     std::list<Scientist> list(std::string col,std::string mod);
+    QSqlDatabase databaseConnect();
 private:
     // This list is maintained in memory and persisted with ScientistRepository::save()
     std::list<Scientist> scientistList;
