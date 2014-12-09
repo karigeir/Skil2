@@ -15,7 +15,7 @@ public:
     // Returns the first scientist that matches the searchTerm
     Scientist* search(std::string searchTerm);
     std::list<Scientist> getAllScientists();
-    std::list<Scientist> getScientistsOrderedBy(std::string,std::string);
+    std::list<Scientist> getScientistsOrderedBy(char col,char mod);
 private:
     ScientistRepository scientistRepository;
 };

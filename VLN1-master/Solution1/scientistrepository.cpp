@@ -3,6 +3,9 @@
 #include <QSqlQuery>
 #include <QSqlDatabase>
 #include <QVariant>
+#include <QString>
+#include <iostream>
+#include <string>
 
 
 
@@ -47,7 +50,7 @@ QSqlDatabase ScientistRepository::databaseConnect()
 
     if (QSqlDatabase::contains(connectionName))
     {
-        db = QSqlDatabase::addDatabase("QSQLITE");
+        db = QSqlDatabase::database(connectionName);
     }
     else
     {
@@ -55,11 +58,10 @@ QSqlDatabase ScientistRepository::databaseConnect()
         db.setDatabaseName("Skil2.sqlite");
     }
 
-    QSqlQuery query(db);
     db.open();
-    query.prepare("PRAGMA foreign_keys ON");
-    query.exec();
-    query.clear();
+    //query.prepare("PRAGMA foreign_keys ON");
+    //query.exec();
+    //query.clear();
 
     return db;
 }
@@ -96,13 +98,9 @@ std::list<Scientist> ScientistRepository::list() {
 
     std::list<Scientist> scientists = std::list<Scientist>();
 
-    QSqlDatabase db = QSqlDatabase();
-    db = QSqlDatabase::addDatabase("QSQLITE");
-    QString dbName = "Skil2.sqlite";
-    db.setDatabaseName(dbName);
-    db.open(); //Tekka hvort tad se tenging eda ekki. Setja database i h skrana.
-
+    QSqlDatabase db = databaseConnect();
     QSqlQuery query(db);
+
     query.exec("SELECT * FROM Scientists");
 
     while(query.next()){
@@ -119,18 +117,81 @@ std::list<Scientist> ScientistRepository::list() {
     //}
 }
 
-std::list<Scientist> ScientistRepository::list(std::string col, std::string mod) {
-    std::list<Scientist> outList = std::list<Scientist>();
+std::list<Scientist> ScientistRepository::list(int col, int mod)
+{
 
-    outList = deepCopy();
-    Comparer comp = Comparer(col,mod);
-    outList.sort(comp);
-    return outList;
+    QSqlDatabase db = databaseConnect();
+    QSqlQuery query(db);
+
+    string sorter;
+
+    switch(col)
+    {
+        case 1:
+           if (mod == 1)
+           {
+               sorter = "Select * from Scientists order by Name ASC";
+           }
+           else if (mod == 2)
+           {
+               sorter = "Select * from Scientists order by Name DESC";
+           }
+           break;
+    case 2:
+        if (mod == 1)
+        {
+            sorter = "Select * from Scientists order by DateOfBirth ASC";
+        }
+        else if (mod == 2)
+        {
+            sorter = "Select * from Scientists order by DateOfBirth DESC";
+        }
+        break;
+    case 3:
+        if (mod == 1)
+        {
+            sorter = "Select * from Scientists order by DateOfDeath ASC";
+        }
+        else if (mod == 2)
+        {
+            sorter = "Select * from Scientists order by DateOfDeath DESC";
+        }
+        break;
+    case 4:
+        if (mod == 1)
+        {
+            sorter = "Select * from Scientists order by Gender ASC";
+        }
+        else if (mod == 2)
+        {
+            sorter = "Select * from Scientists order by Gender DESC";
+        }
+        break;
+    }
+
+    query.exec(QString::fromStdString(sorter));
+
+    std::list<Scientist> scientists = std::list<Scientist>();
+
+    while(query.next())
+    {
+        Scientist a = Scientist();
+        a.name = query.value("Name").toString().toStdString();
+        a.dateOfBirth = query.value("DateOfBirth").toString().toStdString();
+        a.dateOfDeath = query.value("DateofDeath").toString().toStdString();
+        a.gender = query.value("Gender").toString().toStdString();
+        scientists.push_back(a);
+    }
+
+    return scientists;
 }
 
-std::list<Scientist> ScientistRepository::deepCopy() {
+
+std::list<Scientist> ScientistRepository::deepCopy()
+{
     std::list<Scientist> outList = std::list<Scientist>();
-    for(std::list<Scientist>::iterator iter = scientistList.begin(); iter != scientistList.end(); iter++) {
+    for(std::list<Scientist>::iterator iter = scientistList.begin(); iter != scientistList.end(); iter++)
+    {
         outList.push_back(Scientist(*iter));
     }
     return outList;

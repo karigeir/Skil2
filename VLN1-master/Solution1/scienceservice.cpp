@@ -15,7 +15,7 @@ std::list<Scientist> ScienceService::getAllScientists() {
     return scientistRepository.list();
 }
 
-std::list<Scientist> ScienceService::getScientistsOrderedBy(std::string col, std::string mod) {
+std::list<Scientist> ScienceService::getScientistsOrderedBy(char col, char mod) {
     return scientistRepository.list(col,mod);
 }
 

@@ -25,7 +25,7 @@ public:
     Scientist* search(std::string searchTerm);
     std::list<Scientist> list();
     // Returns a list ordered by column and modifier
-    std::list<Scientist> list(std::string col,std::string mod);
+    std::list<Scientist> list(int col, int mod);
     QSqlDatabase databaseConnect();
 private:
     // This list is maintained in memory and persisted with ScientistRepository::save()
