@@ -2,9 +2,11 @@
 #define CONSOLEUI_H
 
 #include "Scientist.h"
+#include "computer.h"
 #include <stack>
 #include <list>
 #include "scienceservice.h"
+#include "computerservice.h"
 #include <QString>
 
 
@@ -16,6 +18,7 @@ public:
     int start();
 private:
     ScienceService scienceService;
+    ComputerService compService;
     void clear();
     void waitForPrompt();
     int respondToMessage();

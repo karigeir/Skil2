@@ -4,8 +4,8 @@
 // Long strings and ASCII art here below \/ \/
 
 std::string MAIN_MENU = "Please use the following commands to interface with this AWESOME DATABASE\n\n\
-        add scientist : Add a scientist to the database\n\
-        add computer  : Add a computer to the database\n\
+        addScientist  : Add a scientist to the database\n\
+        addComputer   : Add a computer to the database\n\
         order         : Order and dislay the records in the database\n\
         search        : Searches for a scientist\n\
         exit          : Exit the program";

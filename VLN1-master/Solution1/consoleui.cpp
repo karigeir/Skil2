@@ -7,6 +7,7 @@
 
 ConsoleUI::ConsoleUI() {
     scienceService = ScienceService();
+    compService = ComputerService();
 }
 
 ConsoleUI::~ConsoleUI() {
@@ -45,7 +46,7 @@ int ConsoleUI::respondToMessage() {
 
     try {
         // Handle all available commands and throw error on unknown ones
-        if(userRequest.find("add scientist") != std::string::npos) {
+        if(userRequest.find("addScientist") != std::string::npos) {
             clear();
             Scientist additionalScientist = Scientist();
             std::cout << "Enter the name of the scientist: ";
@@ -62,7 +63,26 @@ int ConsoleUI::respondToMessage() {
             std::cin >> additionalScientist.gender;
             scienceService.addScientist(additionalScientist);
             clear();
-        } else if(userRequest.find("search") != std::string::npos) {
+        }
+            else if(userRequest.find("addComputer") != std::string::npos) {
+                clear();
+                Computer additionalComputer = Computer();
+                std::cout << "Enter the name of the computer: ";
+                std::cin.ignore();
+                std::getline(std::cin, additionalComputer.name);
+                clear();
+                std::cout << "Enter the building year of the computer: ";
+                std::cin >> additionalComputer.yearBuilt;
+                clear();
+                std::cout << "Enter the type of the computer: ";
+                std::cin >> additionalComputer.type;
+                clear();
+                std::cout << "Enter 1 if the computer was built and 0 if it was never built: ";
+                std::cin >> additionalComputer.was_built;
+                compService.add(additionalComputer);
+                clear();
+        }
+           else if(userRequest.find("search") != std::string::npos) {
             clear();
             std::string searchTerm = "";
             std::cout << "Enter the search term: ";
